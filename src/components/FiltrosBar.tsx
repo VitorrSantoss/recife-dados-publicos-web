@@ -29,7 +29,9 @@ export function FiltrosBar({ filtros, atualizar, limpar }: Props) {
             className="mt-1 rounded-md border border-gray-200 bg-white px-3 py-2 text-sm text-[#1F2937] focus:border-[#0066B3] focus:outline-none focus:ring-2 focus:ring-[#0066B3]/30"
           >
             <option value="todos">Todos</option>
-            <option value="2025">2025</option>
+            <option value="2023">2023</option>
+            <option value="2024">2024</option>
+            <option value="2025">2025 (tempo real)</option>
           </select>
         </div>
 

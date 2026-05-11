@@ -24,7 +24,7 @@ import { GraficoEvolucao } from "@/components/GraficoEvolucao";
 import { GraficoTopBairros } from "@/components/GraficoTopBairros";
 import { GraficoDistribuicaoUnidades } from "@/components/GraficoDistribuicaoUnidades";
 import { TabelaUnidades } from "@/components/TabelaUnidades";
-import logoPrefeitura from '@/assets/logo_prefeitura_semfundo.png';
+import logoPrefeitura from "@/assets/logo_prefeitura_semfundo.png";
 
 export function DashboardPage() {
   const { filtros, atualizar, limpar } = useFiltros();
@@ -33,38 +33,38 @@ export function DashboardPage() {
 
   const casosFiltrados = useMemo(
     () => aplicarFiltros(casos, filtros),
-    [casos, filtros]
+    [casos, filtros],
   );
 
   const unidadesFiltradas = useMemo(() => {
     if (!filtros.bairro) return unidades;
     return unidades.filter((u) =>
-      u.bairro.toLowerCase().includes(filtros.bairro.toLowerCase())
+      u.bairro.toLowerCase().includes(filtros.bairro.toLowerCase()),
     );
   }, [unidades, filtros.bairro]);
 
   const periodoRef =
-    filtros.ano === "todos" ? "Periodo: 2025" : `Periodo: ${filtros.ano}`;
-
+    filtros.ano === "todos"
+      ? "Periodo: 2023-2025"
+      : filtros.ano === 2025
+        ? "Periodo: 2025 (tempo real)"
+        : `Periodo: ${filtros.ano} (historico)`;
   const kpis = useMemo(
     () => calcularKpis(casosFiltrados, unidades, periodoRef),
-    [casosFiltrados, unidades, periodoRef]
+    [casosFiltrados, unidades, periodoRef],
   );
 
   const evolucao = useMemo(
     () => evolucaoTemporal(casosFiltrados),
-    [casosFiltrados]
+    [casosFiltrados],
   );
 
   const topBairros = useMemo(
     () => casosPorBairro(casosFiltrados),
-    [casosFiltrados]
+    [casosFiltrados],
   );
 
-  const distribuicao = useMemo(
-    () => distribuicaoPorTipo(unidades),
-    [unidades]
-  );
+  const distribuicao = useMemo(() => distribuicaoPorTipo(unidades), [unidades]);
 
   const semDados = casosFiltrados.length === 0;
 
@@ -72,7 +72,7 @@ export function DashboardPage() {
     const linhas = [
       ["id", "doenca", "bairro", "ano", "mes"].join(","),
       ...casosFiltrados.map((c) =>
-        [c.id, c.doenca, c.bairro, c.ano, c.mes].join(",")
+        [c.id, c.doenca, c.bairro, c.ano, c.mes].join(","),
       ),
     ].join("\n");
     const blob = new Blob([linhas], { type: "text/csv;charset=utf-8" });
@@ -154,7 +154,6 @@ export function DashboardPage() {
       </header>
 
       <main className="mx-auto max-w-7xl space-y-6 px-4 py-6 sm:px-6">
-
         {/* KPI cards principais */}
         <section
           aria-label="Indicadores principais"
@@ -237,8 +236,12 @@ export function DashboardPage() {
 
         {/* Banner de origem dos dados */}
         {!carregando && (
-          <div className="rounded-md border border-[#0066B3]/20 bg-[#0066B3]/5 px-4 py-2 text-xs text-[#0066B3]">
-            Dados carregados em tempo real do Portal de Dados Abertos da Prefeitura do Recife
+          <div className="rounded-md border border-[#0066B3]/20 bg-[#0066B3]/5 px-4 py-3 text-xs text-[#0066B3]">
+            <span className="font-medium">2025:</span> dados em tempo real do
+            Portal de Dados Abertos do Recife
+            {" · "}
+            <span className="font-medium">2023-2024:</span> dados historicos
+            estimados com base no padrao epidemiologico regional
           </div>
         )}
 
@@ -266,7 +269,8 @@ export function DashboardPage() {
         <div className="mx-auto max-w-7xl px-4 py-5 text-xs text-gray-500 sm:px-6">
           <p>Dados: Portal de Dados Abertos da Prefeitura do Recife</p>
           <p className="mt-1">
-            Aplicacao desenvolvida para fins de teste tecnico - Ultima atualizacao: 11/05/2026
+            Aplicacao desenvolvida para fins de teste tecnico - Ultima
+            atualizacao: 11/05/2026
           </p>
         </div>
       </footer>

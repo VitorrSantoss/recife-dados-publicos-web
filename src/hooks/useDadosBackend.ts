@@ -2,17 +2,10 @@ import { useQuery } from "@tanstack/react-query";
 import { buscarCasos, buscarUnidades } from "@/services/api";
 import { adaptarCaso, adaptarUnidade } from "@/services/adapters";
 import type { CasoArbovirose, UnidadeSaude } from "@/types";
-import { CASOS, UNIDADES_SAUDE } from "@/data/mockData";
+import { CASOS, CASOS_2023, CASOS_2024, UNIDADES_SAUDE } from "@/data/mockData";
 
-// Tempo que os dados ficam em cache no cliente (5 minutos)
-// O backend ja tem cache de 1h, entao isso evita re-buscar sem necessidade
 const STALE_TIME_MS = 5 * 60 * 1000;
 
-function usarMockComoFallback(): boolean {
-  return import.meta.env.VITE_API_URL === undefined;
-}
-
-// Hook de unidades de saude
 export function useUnidades() {
   return useQuery<UnidadeSaude[]>({
     queryKey: ["unidades-saude"],
@@ -21,14 +14,12 @@ export function useUnidades() {
       return dados.map(adaptarUnidade);
     },
     staleTime: STALE_TIME_MS,
-    // Se a API falhar, usa os mocks como fallback silencioso
     placeholderData: UNIDADES_SAUDE,
     retry: 2,
     retryDelay: 1000,
   });
 }
 
-// Hook de casos de arboviroses
 export function useCasos() {
   return useQuery<CasoArbovirose[]>({
     queryKey: ["casos-arboviroses"],
@@ -43,32 +34,33 @@ export function useCasos() {
   });
 }
 
-// Hook agregador — use esse na DashboardPage
 export function useDadosBackend() {
-  const {
-    data: unidades = UNIDADES_SAUDE,
-    isLoading: carregandoUnidades,
-    isError: erroUnidades,
-  } = useUnidades();
+  const resultadoUnidades = useUnidades();
+  const resultadoCasos = useCasos();
 
-  const {
-    data: casos = CASOS,
-    isLoading: carregandoCasos,
-    isError: erroCasos,
-  } = useCasos();
+  // Garante que nunca retorna undefined — usa fallback explícito
+  const unidades: UnidadeSaude[] = resultadoUnidades.data ?? UNIDADES_SAUDE;
+  const casos2025: CasoArbovirose[] = resultadoCasos.data ?? CASOS;
 
-  const carregando = carregandoUnidades || carregandoCasos;
+  const casos: CasoArbovirose[] = [
+    ...CASOS_2023,
+    ...CASOS_2024,
+    ...casos2025,
+  ];
 
-  // Se ambos falharem = mostra erro. Se um falhar = usa mock silenciosamente.
-  const erro = erroUnidades && erroCasos;
+  const carregando =
+    resultadoUnidades.isLoading || resultadoCasos.isLoading;
+
+  const erro =
+    resultadoUnidades.isError && resultadoCasos.isError;
 
   return {
     unidades,
     casos,
+    casos2025,
     carregando,
     erro,
-    // Flags individuais caso queira granularidade na UI
-    erroUnidades,
-    erroCasos,
+    erroUnidades: resultadoUnidades.isError,
+    erroCasos: resultadoCasos.isError,
   };
 }
