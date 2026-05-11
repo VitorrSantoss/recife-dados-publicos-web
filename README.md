@@ -8,12 +8,31 @@ Interface web para visualização de indicadores de saúde pública do Recife, c
 
 ## Sobre a aplicação
 
-O frontend consome a API REST do backend Spring Boot e apresenta os dados em um dashboard interativo com filtros, gráficos e tabela de unidades de saúde.
+O frontend consome a API REST do backend Spring Boot e apresenta os dados em um dashboard
+interativo com filtros, gráficos e tabela de unidades de saúde.
 
 A aplicação combina duas fontes de dados:
 
-- **2025 (tempo real)** - casos de Dengue, Zika e Chikungunya via API do backend, que por sua vez consome o Portal de Dados Abertos do Recife
-- **2023 e 2024 (histórico fictícios)** - gerados deterministicamente com sazonalidade epidemiológica real do Recife (pico em abril/maio), para contextualizar a tendência histórica
+- **2025 (tempo real)** - casos de Dengue, Zika e Chikungunya consumidos diretamente
+  do Portal de Dados Abertos da Prefeitura do Recife via backend.
+  **Estes dados só aparecem com o backend rodando localmente.**
+  Sem a API ativa, a aplicação exibe uma tela de erro informando que não foi possível
+  carregar os dados.
+
+- **2023 e 2024 (histórico fictício)** - gerados deterministicamente com sazonalidade
+  epidemiológica real do Recife (pico em abril/maio), para contextualizar a tendência
+  histórica. Estes dados estão embutidos no frontend e não dependem da API.
+
+### Comportamento por estado da API
+
+| Estado da API | 2023 | 2024 | 2025 |
+|---|---|---|---|
+| Backend rodando | Fictício | Fictício | Tempo real (Portal do Recife) |
+| Backend fora | Indisponível | Indisponível | Erro - tela de indisponibilidade |
+
+> Para que o dashboard funcione corretamente, o backend deve estar rodando
+> em `http://localhost:8080/api` antes de iniciar o frontend.
+> Consulte o repositório do backend para instruções de execução.
 
 ---
 
