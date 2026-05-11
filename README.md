@@ -7,6 +7,9 @@ Interface web para visualização de indicadores de saúde pública do Recife, c
 ---
 
 ## Sobre a aplicação
+### ⚠️ Dependência Obrigatória: Backend API
+
+> **ATENÇÃO:** O frontend **SÓ irá funcionar** caso a API do backend (Spring Boot) esteja em execução. Sem a API ativa, a aplicação exibirá uma tela de erro e nenhum dado poderá ser visualizado no dashboard.
 
 O frontend consome a API REST do backend Spring Boot e apresenta os dados em um dashboard
 interativo com filtros, gráficos e tabela de unidades de saúde.
